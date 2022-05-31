@@ -8,6 +8,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * 客户端
  */
@@ -15,7 +18,6 @@ public class NettyClient {
     public static void main(String[] args) throws InterruptedException {
         //客户端的事件循环组
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-
 
         try{
             //客户端自动对象，不是serverBootstrap

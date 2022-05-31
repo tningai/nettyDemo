@@ -1,10 +1,7 @@
 package netty.io.netty.sample;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -28,7 +25,8 @@ public class NettyServer {
                     //.handler()
                     .option(ChannelOption.SO_BACKLOG,128)//设置线程队列等待个数
                     .childOption(ChannelOption.SO_KEEPALIVE,true)//设置保持活动连接状态
-                    .childHandler(new ChannelInitializer<SocketChannel>() {//创建一个通道测试对象，匿名对象
+                    .handler(null) //如果是handler方法，是对bossgroup加handler方法；如果是childHandler，是对workergroup加handler方法
+                    .childHandler(new ChannelInitializer<SocketChannel>() {//创建一个通道初始化对象，匿名对象
                         //给pipeline设置handler处理器
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
@@ -40,6 +38,19 @@ public class NettyServer {
 
             //绑定端口号并设置同步监听，返回一个channelFuture
             ChannelFuture channelFuture = bootstrap.bind(8001).sync();
+
+            //对channelFuture新建监听器
+            channelFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        System.out.println("server bind 8001 is success");
+                    } else {
+                        System.out.println("server bind 8001 is failure");
+                    }
+                }
+            });
+
             //对关闭通道进行监听
             channelFuture.channel().closeFuture().sync();
         } finally {
